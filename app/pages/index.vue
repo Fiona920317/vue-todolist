@@ -21,6 +21,12 @@
           <div class="signUpForm__body__inputGroup">
             <label for="email" class="form-label">Email</label>
             <input
+              v-model="emailVal"
+              @blur="emailTouched = true"
+              :class="{
+                'is-valid': emailTouched && emailState,
+                'is-invalid': emailTouched && !emailState,
+              }"
               type="email"
               name="email"
               class="form-control"
@@ -28,10 +34,7 @@
               placeholder="請輸入email"
               required
             />
-            <div class="invalid-tooltip">請輸入有效的email</div>
-            <div class="invalid-tooltip d-none" id="email-used">
-              Email已被使用
-            </div>
+            <div class="invalid-tooltip">{{ emailText }}</div>
           </div>
           <div class="signUpForm__body__inputGroup">
             <label for="nickname" class="form-label">暱稱</label>
@@ -54,7 +57,7 @@
                 'is-invalid': passwordTouched && !passwordState,
               }"
               @blur="passwordTouched = true"
-              v-model="password"
+              v-model="passwordVal"
               type="password"
               name="password"
               class="form-control"
@@ -98,20 +101,41 @@
 import { ref, watch } from "vue";
 
 //匯入utils以驗證表單內容
-import { validatePassword } from "#imports";
+import { validateEmail, validatePassword } from "#imports";
+
+//自訂email tooltip顯示條件以及內容
+const emailVal = ref("");
+const emailTouched = ref(false);
+const emailState = ref(false);
+const emailText = ref("請輸入email");
+watch(emailVal, () => {
+  if (!emailTouched.value) {
+    return;
+  }
+  emailState.value = validateEmail(emailVal.value).state;
+  emailText.value = validateEmail(emailVal.value).text;
+  console.log(
+    validateEmail(emailVal.value).state,
+    validateEmail(emailVal.value).text,
+  );
+});
 
 //自訂password tooltip顯示條件以及內容
-let password = ref("");
-let passwordTouched = ref(false);
-let passwordState = ref(false);
-let passwordText = ref("請輸入密碼");
+const passwordVal = ref("");
+const passwordTouched = ref(false);
+const passwordState = ref(false);
+const passwordText = ref("請輸入密碼");
 
-watch(password, () => {
+watch(passwordVal, () => {
   if (!passwordTouched.value) {
     return;
   }
-  passwordState.value = validatePassword(password.value).state;
-  passwordText.value = validatePassword(password.value).text;
+  passwordState.value = validatePassword(passwordVal.value).state;
+  passwordText.value = validatePassword(passwordVal.value).text;
+  console.log(
+    validateEmail(emailVal.value).state,
+    validateEmail(emailVal.value).text,
+  );
 });
 </script>
 

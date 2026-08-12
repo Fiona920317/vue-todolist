@@ -1,3 +1,14 @@
+//驗證email
+export function validateEmail(email) {
+  if (!email) {
+    return { state: false, text: "請輸入email" };
+  }
+  if (!email.includes("@")) {
+    return { state: false, text: "email格式不正確" };
+  }
+  return { state: true, text: "密碼格式正確" };
+}
+
 //驗證password
 export function validatePassword(password) {
   if (!password) {
