@@ -14,7 +14,7 @@
       <div class="signUpForm ms-md-3 ms-lg-5 p-3 p-md-0">
         <h2 class="signUpForm__title">註冊帳號</h2>
         <form
-          class="signUpForm__body needs-validation"
+          class="signUpForm__body"
           @submit.prevent="validateForm(password)"
           novalidate
         >
@@ -49,6 +49,11 @@
           <div class="signUpForm__body__inputGroup">
             <label for="password" class="form-label">密碼</label>
             <input
+              :class="{
+                'is-valid': passwordTouched && passwordState,
+                'is-invalid': passwordTouched && !passwordState,
+              }"
+              @blur="passwordTouched = true"
               v-model="password"
               type="password"
               name="password"
@@ -58,7 +63,7 @@
               autocomplete="off"
               required
             />
-            <div class="invalid-tooltip">密碼至少需6個字元</div>
+            <div class="invalid-tooltip">{{ passwordText }}</div>
           </div>
           <div class="signUpForm__body__inputGroup">
             <label for="password2" class="form-label">請再次輸入密碼</label>
@@ -90,15 +95,24 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
-//表單debounce功能
+//匯入utils以驗證表單內容
 import { validatePassword } from "#imports";
-let password = ref("123456");
 
-const validateForm = (password) => {
-  console.log(validatePassword(password));
-};
+//自訂password tooltip顯示條件以及內容
+let password = ref("");
+let passwordTouched = ref(false);
+let passwordState = ref(false);
+let passwordText = ref("請輸入密碼");
+
+watch(password, () => {
+  if (!passwordTouched.value) {
+    return;
+  }
+  passwordState.value = validatePassword(password.value).state;
+  passwordText.value = validatePassword(password.value).text;
+});
 </script>
 
 <style lang="scss" scoped>
