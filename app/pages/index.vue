@@ -13,7 +13,11 @@
       />
       <div class="signUpForm ms-md-3 ms-lg-5 p-3 p-md-0">
         <h2 class="signUpForm__title">註冊帳號</h2>
-        <form class="signUpForm__body needs-validation" novalidate>
+        <form
+          class="signUpForm__body needs-validation"
+          @submit.prevent="validateForm(password)"
+          novalidate
+        >
           <div class="signUpForm__body__inputGroup">
             <label for="email" class="form-label">Email</label>
             <input
@@ -45,6 +49,7 @@
           <div class="signUpForm__body__inputGroup">
             <label for="password" class="form-label">密碼</label>
             <input
+              v-model="password"
               type="password"
               name="password"
               class="form-control"
@@ -84,7 +89,17 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { ref } from "vue";
+
+//表單debounce功能
+import { validatePassword } from "#imports";
+let password = ref("123456");
+
+const validateForm = (password) => {
+  console.log(validatePassword(password));
+};
+</script>
 
 <style lang="scss" scoped>
 .background {
