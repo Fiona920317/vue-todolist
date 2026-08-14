@@ -21,11 +21,11 @@
           <div class="signUpForm__body__inputGroup">
             <label for="email" class="form-label">Email</label>
             <input
-              v-model="emailVal"
-              @blur="emailTouched = true"
+              v-model="email.val"
+              @blur="showTooltip(email, validateEmail)"
               :class="{
-                'is-valid': emailTouched && emailState,
-                'is-invalid': emailTouched && !emailState,
+                'is-valid': email.touched && email.state,
+                'is-invalid': email.touched && !email.state,
               }"
               type="email"
               name="email"
@@ -34,7 +34,7 @@
               placeholder="請輸入email"
               required
             />
-            <div class="invalid-tooltip">{{ emailText }}</div>
+            <div class="invalid-tooltip">{{ email.text }}</div>
           </div>
           <div class="signUpForm__body__inputGroup">
             <label for="nickname" class="form-label">暱稱</label>
@@ -53,11 +53,11 @@
             <label for="password" class="form-label">密碼</label>
             <input
               :class="{
-                'is-valid': passwordTouched && passwordState,
-                'is-invalid': passwordTouched && !passwordState,
+                'is-valid': password.touched && password.state,
+                'is-invalid': password.touched && !password.state,
               }"
-              @blur="passwordTouched = true"
-              v-model="passwordVal"
+              @blur="showTooltip(password, validatePassword)"
+              v-model="password.val"
               type="password"
               name="password"
               class="form-control"
@@ -66,7 +66,7 @@
               autocomplete="off"
               required
             />
-            <div class="invalid-tooltip">{{ passwordText }}</div>
+            <div class="invalid-tooltip">{{ password.text }}</div>
           </div>
           <div class="signUpForm__body__inputGroup">
             <label for="password2" class="form-label">請再次輸入密碼</label>
@@ -100,43 +100,49 @@
 <script setup>
 import { ref, watch } from "vue";
 
-//匯入utils以驗證表單內容
+//匯入:匯入utils以驗證表單內容
 import { validateEmail, validatePassword } from "#imports";
 
-//自訂email tooltip顯示條件以及內容
-const emailVal = ref("");
-const emailTouched = ref(false);
-const emailState = ref(false);
-const emailText = ref("請輸入email");
-watch(emailVal, () => {
-  if (!emailTouched.value) {
-    return;
-  }
-  emailState.value = validateEmail(emailVal.value).state;
-  emailText.value = validateEmail(emailVal.value).text;
-  console.log(
-    validateEmail(emailVal.value).state,
-    validateEmail(emailVal.value).text,
-  );
-});
+//函式:顯示指定input的tooltip
+const showTooltip = (input_value, validateInput) => {
+  input_value.state = validateInput(input_value.val).state;
+  input_value.text = validateInput(input_value.val).text;
+  input_value.touched = true;
+};
 
-//自訂password tooltip顯示條件以及內容
-const passwordVal = ref("");
-const passwordTouched = ref(false);
-const passwordState = ref(false);
-const passwordText = ref("請輸入密碼");
-
-watch(passwordVal, () => {
-  if (!passwordTouched.value) {
-    return;
-  }
-  passwordState.value = validatePassword(passwordVal.value).state;
-  passwordText.value = validatePassword(passwordVal.value).text;
-  console.log(
-    validateEmail(emailVal.value).state,
-    validateEmail(emailVal.value).text,
-  );
+//監聽email.val變化，並自訂email tooltip顯示條件以及內容
+const email = ref({
+  val: "",
+  touched: false,
+  state: false,
+  text: "請輸入email",
 });
+watch(
+  () => email.value.val, //深層監聽(這樣寫才能監聽email.val後續變化，不會喪失reactivity)
+  () => {
+    if (!email.value.touched) {
+      return;
+    }
+    showTooltip(email.value, validateEmail);
+  },
+);
+
+//監聽password.val變化，並自訂password tooltip顯示條件以及內容
+const password = ref({
+  val: "",
+  touched: false,
+  state: false,
+  text: "請輸入密碼",
+});
+watch(
+  () => password.value.val, //深層監聽(這樣寫才能監聽password.val後續變化，不會喪失reactivity)
+  () => {
+    if (!password.value.touched) {
+      return;
+    }
+    showTooltip(password.value, validatePassword);
+  },
+);
 </script>
 
 <style lang="scss" scoped>
