@@ -79,12 +79,15 @@
             <NuxtLink class="btn btn-primary" to="/login">登入</NuxtLink>
           </div>
         </form>
+        <button @click="signupApi(123)">check</button>
       </div>
     </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { signupApi } from "~/services/signupApi";
+</script>
 
 <style lang="scss" scoped>
 .background {
